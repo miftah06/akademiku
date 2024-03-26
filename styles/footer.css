@@ -1,0 +1,39 @@
+/* footer.css */
+
+.site-footer {
+    background-color: #333;
+    color: #fff;
+    padding: 20px 0;
+}
+
+.footer-container {
+    max-width: 800px;
+    margin: 0 auto;
+    display: flex;
+    justify-content: space-between;
+}
+
+.footer-section {
+    flex: 1;
+}
+
+h3 {
+    color: #fff;
+}
+
+.social-icons {
+    display: flex;
+    gap: 10px;
+}
+
+.social-icons img {
+    width: 30px;
+    height: 30px;
+    border-radius: 50%;
+}
+
+.copyright {
+    text-align: center;
+    margin-top: 20px;
+    color: #ddd;
+}

@@ -1,0 +1,36 @@
+/* home.css */
+
+body {
+    margin: 0;
+    padding: 0;
+    font-family: 'Arial', sans-serif;
+}
+
+main {
+    max-width: 800px;
+    margin: 20px auto;
+    padding: 20px;
+}
+
+h2 {
+    color: #333;
+}
+
+.thumbnail {
+    width: 150px;
+    height: 150px;
+    object-fit: cover;
+    margin: 10px;
+    border: 2px solid #ddd;
+    border-radius: 8px;
+}
+
+.video-container {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 20px;
+}
+
+.video {
+    flex: 1 0 calc(50% - 20px);
+}

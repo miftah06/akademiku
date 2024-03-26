@@ -1,0 +1,70 @@
+/* register.css */
+
+body {
+    font-family: 'Arial', sans-serif;
+    margin: 0;
+    padding: 0;
+    background-color: #181c26; /* Warna latar belakang biru gelap */
+    color: #fff; /* Warna teks putih */
+}
+
+.header {
+    background-color: #333;
+    color: #fff;
+    padding: 10px;
+    text-align: center;
+}
+
+.register-section {
+    text-align: center;
+    padding: 20px;
+}
+
+.register-container {
+    max-width: 400px;
+    margin: 0 auto;
+    background-color: #2c313c; /* Warna latar belakang form */
+    padding: 20px;
+    border-radius: 8px;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+}
+
+h2 {
+    color: #61dafb; /* Warna judul biru muda */
+}
+
+label {
+    color: #61dafb; /* Warna label biru muda */
+}
+
+input {
+    width: 100%;
+    padding: 10px;
+    margin: 8px 0;
+    box-sizing: border-box;
+    background-color: #333; /* Warna input biru tua */
+    color: #fff;
+    border: 1px solid #61dafb;
+    border-radius: 4px;
+}
+
+button {
+    background-color: #61dafb; /* Warna tombol biru muda */
+    color: #fff;
+    padding: 10px;
+    border: none;
+    border-radius: 4px;
+    cursor: pointer;
+}
+
+button:hover {
+    background-color: #4fa3d1; /* Warna tombol biru tua saat hover */
+}
+
+.error {
+    color: #ff4d4d; /* Warna teks error merah */
+}
+
+.success {
+    color: #70db70; /* Warna teks sukses hijau */
+}

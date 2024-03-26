@@ -1,0 +1,77 @@
+/* materi.css */
+
+body {
+    font-family: Arial, sans-serif;
+    background-color: #f8f9fa;
+    margin: 0;
+    padding: 0;
+}
+
+.container {
+    max-width: 800px;
+    margin: auto;
+    padding: 20px;
+    background-color: #fff;
+    border-radius: 8px;
+    box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+}
+
+h1 {
+    margin-bottom: 20px;
+    font-size: 28px;
+    color: #333;
+    border-bottom: 2px solid #333;
+    padding-bottom: 10px;
+}
+
+p {
+    margin-bottom: 10px;
+    font-size: 16px;
+    line-height: 1.6;
+}
+
+strong {
+    font-weight: bold;
+}
+
+img {
+    max-width: 100%;
+    height: auto;
+}
+
+a {
+    color: #007bff;
+    text-decoration: none;
+}
+
+a:hover {
+    text-decoration: underline;
+}
+
+.thumbnail-container {
+    margin-top: 20px;
+    overflow: hidden;
+    border-radius: 8px;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+}
+
+.thumbnail {
+    display: block;
+    width: 100%;
+    height: auto;
+    transition: transform 0.3s;
+}
+
+.thumbnail:hover {
+    transform: scale(1.05);
+}
+
+.material-link {
+    display: block;
+    margin-top: 10px;
+    font-size: 16px;
+}
+
+.material-link i {
+    margin-right: 5px;
+}

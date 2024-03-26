@@ -1,0 +1,1 @@
+scp akademiku.zip root@1.forum.my.id:/home/akademiku/

@@ -1,0 +1,20 @@
+# Melarang akses langsung ke file .json
+<FilesMatch "\.json$">
+    Order allow,deny
+    Deny from all
+    ErrorDocument 403 /errors/cli/error_404.php
+</FilesMatch>
+
+# Melarang akses langsung ke subfolder
+Options -Indexes
+
+# Mengecualikan folder "send"
+RewriteEngine On
+RewriteRule ^send($|/) - [L]
+
+# Melarang akses langsung ke file .php, .txt, .jpg dan .db
+<FilesMatch "\.(mp4|txt|png|db)$">
+    Order allow,deny
+    Deny from all
+    ErrorDocument 403 /errors/cli/error_404.php
+</FilesMatch>

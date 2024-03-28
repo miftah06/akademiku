@@ -49,8 +49,8 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     $instructions = $_POST['instructions'];
     
     // Define upload directories
-    $thumbnailDirectory = 'thumbnails/';
-    $courseMaterialDirectory = 'assets/pdf/';
+    $thumbnailDirectory = '../thumbnails/';
+    $courseMaterialDirectory = '../assets/pdf/';
 
     // Ensure directories exist with specific permissions
     ensureDirectory($thumbnailDirectory);
@@ -79,7 +79,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     $courseVideo = convertVideoLinkToIframe($courseVideo);
 
     // Create file materi_$nama_course.php
-    $fileName = "materi_$courseName.php";
+    $fileName = "materi_$courseName.html";
     $filePath = "frontend/$fileName";
     $fileContent = <<<EOD
 <?php

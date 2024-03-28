@@ -1,58 +1,47 @@
 <?php
-// Include the necessary functions and data handling logic
-include 'db_connect.php';
-include_once 'header.php';
-
 // Start the session
 session_start();
 
 // Check if the user is already logged in, redirect to the home page
-if (isset($_SESSION['instructors'])) {
-    header("Location: course.php");
+if (isset($_SESSION['user'])) {
+    if ($_SESSION['role'] == 'admin') {
+        header("Location: admin.php");
+    } else {
+        header("Location: lms.php");
+    }
     exit();
 }
 
 // Handle login form submission
 if ($_SERVER["REQUEST_METHOD"] == "POST") {
-    // Placeholder function for user authentication (replace with your actual logic)
-    $authenticatedUser = authenticateUser($_POST['username'], $_POST['password']);
+    $username = $_POST['username'];
+    $password = $_POST['password'];
 
-    if ($authenticatedUser !== false) {
+    // Placeholder function for user authentication
+    if (authenticateAdmin($username, $password)) {
         // Set session variables
-        $_SESSION['user'] = $authenticatedUser['username'];
-
-        // Redirect based on user role
-        if ($authenticatedUser['role'] == 'admin') {
-            header("Location: course.php");
-            exit();
-        } else {
-            header("Location: lms.php");
-            exit();
-        }
+        $_SESSION['user'] = $username;
+        $_SESSION['role'] = 'admin';
+        
+        // Redirect to the appropriate page
+        header("Location: interface.php");
+        exit();
     } else {
         $error = "Invalid username or password";
     }
 }
 
-// Placeholder function for user authentication (replace with your actual logic)
-function authenticateUser($username, $password)
-{
-    // Implement your user authentication logic here
-    // Example: Check the database for the provided username and password
-    // Replace this with your actual authentication logic
-    $pdo = connectToDatabase();
+// Placeholder function for admin authentication using JSON file
+function authenticateAdmin($username, $password) {
+    $adminData = json_decode(file_get_contents('admin.json'), true);
 
-    // Fetch user data using the username
-    $stmt = $pdo->prepare("SELECT * FROM users WHERE username = ?");
-    $stmt->execute([$username]);
-    $userData = $stmt->fetch(PDO::FETCH_ASSOC);
-
-    // Verify password
-    if ($userData && password_verify($password, $userData['password'])) {
-        return $userData;
-    } else {
-        return false;
+    foreach ($adminData as $admin) {
+        if ($admin['username'] === $username && $admin['password'] === $password) {
+            return true;
+        }
     }
+
+    return false;
 }
 ?>
 <!DOCTYPE html>
@@ -60,7 +49,7 @@ function authenticateUser($username, $password)
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Login admin - Akademiku</title>
+    <title>Login Admin - Akademiku</title>
     <!-- Include your stylesheets and scripts here -->
     <style>
         /* Add your custom styles for the Login page */
@@ -106,7 +95,7 @@ function authenticateUser($username, $password)
         <div class="login-form">
             <form method="post" action="<?php echo htmlspecialchars($_SERVER["PHP_SELF"]); ?>">
                 <label for="username">Username:</label>
-                <input type="username" id="username" name="username" required> <!-- Perhatikan atribut name="username" -->
+                <input type="text" id="username" name="username" required>
 
                 <br>
 

@@ -9,7 +9,7 @@ include 'header.php';
 function listCourses($conn) {
     $files = scandir("frontend");
     foreach ($files as $file) {
-        if (pathinfo($file, PATHINFO_EXTENSION) == "php") {
+        if (pathinfo($file, PATHINFO_EXTENSION) == "html") {
             echo "<option value='$file'>$file</option>";
         }
     }

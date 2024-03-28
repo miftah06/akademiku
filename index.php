@@ -11,7 +11,7 @@
     <main>
         <div class="container">
             <h2>Welcome to Akademiku</h2>
-			<p> Silahkan hubungi admin di t.me/izmiftah untuk mendapatkan token/akun login </p>
+	    <p> Silahkan hubungi admin di t.me/izmiftah untuk mendapatkan token/akun login untuk akses materi akademiku</p>
             <div class="thumbnails">
                 <?php
                     // Include login.php for login/logout functionality

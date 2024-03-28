@@ -72,8 +72,10 @@ if (!isset($_SESSION['user'])) {
 
     <main>
         <div class="button-container">
+			<button onclick="location.href='course_manage.php'">Atur Kursus</button>
             <button onclick="location.href='index_course.php'">Buat Kursus</button>
             <button onclick="location.href='index_materi.php'">Tambah Materi</button>
+            <button onclick="location.href='nano_course.php'">Edit Materi</button>
         </div>
 
         <div class="logout-link">

@@ -5,73 +5,6 @@ session_start();
 include 'db_connect.php';
 include 'header.php';
 
-// Directory to upload files
-$thumbnailUploadDir = 'thumbnails/';
-$courseMaterialUploadDir = 'assets/pdf/';
-
-// Function to list all available courses
-function listCourses($conn) {
-    $sql = "SELECT * FROM courses";
-    $result = $conn->query($sql);
-    
-    if ($result->num_rows > 0) {
-        while ($row = $result->fetch_assoc()) {
-            echo "<option value='" . $row['id'] . "'>" . $row['course_name'] . "</option>";
-        }
-    } else {
-        echo "<option value=''>No courses available</option>";
-    }
-}
-
-// Handle form submission to add course to the list
-if ($_SERVER['REQUEST_METHOD'] === 'POST') {
-    // Validate form data
-    $courseName = $_POST['course_name'] ?? '';
-    $description = $_POST['description'] ?? '';
-    $courseVideo = $_POST['course_video'] ?? '';
-    $courseText = $_POST['course_text'] ?? '';
-    $instructions = $_POST['instructions'] ?? '';
-
-    // Check if all required fields are filled
-    if (empty($courseName) || empty($description) || empty($courseText) || empty($instructions)) {
-        echo "All fields are required.";
-        exit();
-    }
-
-    // Upload thumbnail file
-    if (!empty($_FILES['thumbnail']['name'])) {
-        $thumbnailFileName = basename($_FILES['thumbnail']['name']);
-        $thumbnailUploadPath = $thumbnailUploadDir . $thumbnailFileName;
-        if (move_uploaded_file($_FILES['thumbnail']['tmp_name'], $thumbnailUploadPath)) {
-            echo "Thumbnail uploaded successfully!<br>";
-        } else {
-            echo "Failed to upload thumbnail file.<br>";
-            exit();
-        }
-    } else {
-        echo "Thumbnail file is required.<br>";
-        exit();
-    }
-
-    // Upload course material file
-    if (!empty($_FILES['course_material']['name'])) {
-        $courseMaterialFileName = basename($_FILES['course_material']['name']);
-        $courseMaterialUploadPath = $courseMaterialUploadDir . $courseMaterialFileName;
-        if (move_uploaded_file($_FILES['course_material']['tmp_name'], $courseMaterialUploadPath)) {
-            echo "Course material uploaded successfully!<br>";
-        } else {
-            echo "Failed to upload course material file.<br>";
-            exit();
-        }
-    } else {
-        echo "Course material file is required.<br>";
-        exit();
-    }
-
-    // Insert course details into the database
-    $sql = "INSERT INTO courses (course_name, description, course_video, course_text, instructions, thumbnail, course_material) VALUES ('$courseName', '$description', '$courseVideo', '$courseText', '$instructions', '$thumbnailUploadPath', '$courseMaterialUploadPath')";
-}
-
 // Function to ensure directory exists with specific permissions
 function ensureDirectory($directory) {
     if (!file_exists($directory)) {
@@ -80,90 +13,15 @@ function ensureDirectory($directory) {
     }
 }
 
-// Function to convert video link to iframe
-function convertVideoLinkToIframe($videoLink) {
-    // Pattern to match YouTube and Vimeo links
-    $pattern = '/(?:https?:\/\/)?(?:www\.)?(?:youtube\.com\/(?:[^\/\n\s]+\/\S+\/|(?:v|e(?:mbed)?)\/|\S*?[?&]v=)|youtu\.be\/|vimeo\.com\/(?:\w*\/videos\/)?)([\w\-]{11}|\d+)/';
-
-    // Check if video link matches pattern
-    if (preg_match($pattern, $videoLink, $matches)) {
-        // If YouTube link
-        if (strpos($videoLink, 'youtube') !== false) {
-            $videoId = $matches[1];
-            return "<iframe width=\"560\" height=\"315\" src=\"https://www.youtube.com/embed/$videoId\" frameborder=\"0\" allowfullscreen></iframe>";
-        }
-        // If Vimeo link
-        elseif (strpos($videoLink, 'vimeo') !== false) {
-            $videoId = $matches[1];
-            return "<iframe src=\"https://player.vimeo.com/video/$videoId\" width=\"560\" height=\"315\" frameborder=\"0\" allowfullscreen></iframe>";
-        }
-    }
-
-    // Return original link if not matched
-    return "<a href=\"$videoLink\">$videoLink</a>";
-}
-
-// Handle form submission
-if ($_SERVER['REQUEST_METHOD'] === 'POST') {
-    // Validate form data
-    $courseName = $_POST['course_name'];
-    $description = $_POST['description'];
-    $courseVideo = $_POST['course_video'];
-    $courseText = $_POST['course_text'];
-    $instructions = $_POST['instructions'];
-    
-    // Define upload directories
-    $thumbnailDirectory = 'thumbnails/';
-    $courseMaterialDirectory = 'assets/pdf/';
-
-    // Ensure directories exist with specific permissions
-    ensureDirectory($thumbnailDirectory);
-    ensureDirectory($courseMaterialDirectory);
-
-    // Handle file uploads
-    $thumbnailFileName = basename($_FILES['thumbnail']['name']);
-    $thumbnailUploadPath = $thumbnailDirectory . $thumbnailFileName;
-    if (move_uploaded_file($_FILES['thumbnail']['tmp_name'], $thumbnailUploadPath)) {
-        // File uploaded successfully
-    } else {
-        // Failed to upload file
-        $error_message = "Failed to upload thumbnail file.";
-    }
-
-    $courseMaterialFileName = basename($_FILES['course_material']['name']);
-    $courseMaterialUploadPath = $courseMaterialDirectory . $courseMaterialFileName;
-    if (move_uploaded_file($_FILES['course_material']['tmp_name'], $courseMaterialUploadPath)) {
-        // File uploaded successfully
-    } else {
-        // Failed to upload file
-        $error_message = "Failed to upload course material file.";
-    }
-
-    // Convert video link to iframe
-    $courseVideo = convertVideoLinkToIframe($courseVideo);
-
-    // Create file materi_$nama_course.php
-    $fileName = "materi_$courseName.php";
-    $filePath = "frontend/$fileName";
-
-    // Check if file exists
-    if (file_exists($filePath)) {
-        // File exists, append content
-        $fileContent = file_get_contents($filePath);
-    } else {
-        // File doesn't exist, create new content
-        $fileContent = '';
-    }
-
-        // Append new content
-        $newContent = <<<EOD
+// Function to generate HTML file content for the course
+function generateHTMLContent($courseName, $description, $courseVideo, $courseText, $instructions, $courseMaterialFileName) {
+    $htmlContent = <<<EOD
 <?php
 // File Materi: $courseName
 // Deskripsi: $description
 // Video: $courseVideo
 // Text: $courseText
 // Instruksi: $instructions
-// Thumbnail: $thumbnailFileName
 // Materi PDF: $courseMaterialFileName
 ?>
 <!DOCTYPE html>
@@ -223,24 +81,6 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             text-decoration: underline;
         }
 
-        .thumbnail-container {
-            margin-top: 20px;
-            overflow: hidden;
-            border-radius: 8px;
-            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
-        }
-
-        .thumbnail {
-            display: block;
-            width: 100%;
-            height: auto;
-            transition: transform 0.3s;
-        }
-
-        .thumbnail:hover {
-            transform: scale(1.05);
-        }
-
         .material-link {
             display: block;
             margin-top: 10px;
@@ -258,22 +98,56 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     <p><strong>Video:</strong> $courseVideo</p>
     <p><strong>Text:</strong> $courseText</p>
     <p><strong>Instruksi:</strong> $instructions</p>
-    <p><strong>Thumbnail:</strong> <img src="$thumbnailUploadPath" alt="Thumbnail"></p>
-    <p><strong>Materi PDF:</strong> <a href="$courseMaterialUploadPath">$courseMaterialFileName</a></p>
+    <p><strong>Materi PDF:</strong> <a href="$courseMaterialFileName">$courseMaterialFileName</a></p>
 </body>
 </html>
 EOD;
+    return $htmlContent;
+}
 
-// Append new content to the existing file
-$fileContent .= $newContent;
+// Handle form submission
+if ($_SERVER['REQUEST_METHOD'] === 'POST') {
+    // Validate form data
+    $courseName = $_POST['course_name'];
+    $description = $_POST['description'];
+    $courseVideo = $_POST['course_video'];
+    $courseText = $_POST['course_text'];
+    $instructions = $_POST['instructions'];
 
-    // Write content to file
-    if (file_put_contents($filePath, $fileContent) !== false) {
-        // Redirect to index or any other page
-        header("Location: index.php");
-        exit();
+    // Define upload directories
+    $courseMaterialUploadDir = 'assets/pdf/';
+    $courseMaterialDirectory = $_SERVER['DOCUMENT_ROOT'] . $courseMaterialUploadDir;
+
+    // Ensure directory exists with specific permissions
+    ensureDirectory($courseMaterialDirectory);
+
+    // Upload course material file
+    if (!empty($_FILES['course_material']['name'])) {
+        $courseMaterialFileName = basename($_FILES['course_material']['name']);
+        $courseMaterialUploadPath = $courseMaterialDirectory . $courseMaterialFileName;
+        if (move_uploaded_file($_FILES['course_material']['tmp_name'], $courseMaterialUploadPath)) {
+            // Generate HTML content for the course
+            $htmlContent = generateHTMLContent($courseName, $description, $courseVideo, $courseText, $instructions, $courseMaterialFileName);
+
+            // Create file for the course
+            $fileName = "materi_" . preg_replace('/[^A-Za-z0-9\-]/', '_', $courseName) . "_1.html";
+            $filePath = "frontend/$fileName";
+
+            // Write content to file
+            if (file_put_contents($filePath, $htmlContent) !== false) {
+                // Redirect to index or any other page
+                header("Location: index.php");
+                exit();
+            } else {
+                $error_message = "Failed to create course file.";
+            }
+        } else {
+            echo "Failed to upload course material file.<br>";
+            exit();
+        }
     } else {
-        $error_message = "Failed to create course file.";
+        echo "Course material file is required.<br>";
+        exit();
     }
 }
 ?>
@@ -286,21 +160,7 @@ $fileContent .= $newContent;
     <title>Add New Course</title>
 </head>
 <body>
-    <h2>Edit Course Material</h2>
-    <form action="edit_course.php" method="post">
-        <label for="course_file">Select Course:</label>
-        <select name="course_file" id="course_file">
-            <?php
-            $files = scandir("frontend");
-            foreach ($files as $file) {
-                if (pathinfo($file, PATHINFO_EXTENSION) == "php") {
-                    echo "<option value='$file'>$file</option>";
-                }
-            }
-            ?>
-        </select>
-        <button type="submit">Edit Course Material</button>
-    </form>
+    <h2>Add New Course</h2>
     <form action="<?php echo htmlspecialchars($_SERVER["PHP_SELF"]); ?>" method="post" enctype="multipart/form-data">
         <label for="course_name">Course Name:</label>
         <input type="text" id="course_name" name="course_name" required><br>
@@ -312,10 +172,8 @@ $fileContent .= $newContent;
         <textarea id="course_text" name="course_text" rows="4" required></textarea><br>
         <label for="instructions">Instructions:</label>
         <textarea id="instructions" name="instructions" rows="4" required></textarea><br>
-        <label for="thumbnail">Thumbnail (Image):</label>
-        <input type="file" id="thumbnail" name="thumbnail" accept="image/*" required><br>
         <label for="course_material">Course Material (PDF):</label>
-        <input type="file" id="course_material" name="course_material" accept=".pdf" required><br>
+        <input type="file" id="course_material" name="course_material" accept=".pdf" ><br>
         <button type="submit">Add New Course</button>
     </form>
 </body>

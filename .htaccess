@@ -1,20 +1,34 @@
-# Melarang akses langsung ke file .json
-<FilesMatch "\.json$">
-    Order allow,deny
-    Deny from all
-    ErrorDocument 403 /errors/cli/error_404.php
-</FilesMatch>
+ #DocumentRoot "/home/akademiku"
+    <Directory "/home/akademiku">
+        Options None
+        Require all granted
+    </Directory>
+    # Melarang akses langsung ke file .json
+    <FilesMatch "\.json$">
+        Order allow,deny
+        Deny from all
+        ErrorDocument 403 404notfound
+    </FilesMatch>
 
-# Melarang akses langsung ke subfolder
-Options -Indexes
+    # Melarang akses langsung ke subfolder
+    Options -Indexes
 
-# Mengecualikan folder "send"
-RewriteEngine On
-RewriteRule ^send($|/) - [L]
+    <Directory "/home/akademiku/frontend">
+        AllowOverride All
+        Require all granted
+    </Directory>
 
-# Melarang akses langsung ke file .php, .txt, .jpg dan .db
-<FilesMatch "\.(mp4|txt|png|db)$">
-    Order allow,deny
-    Deny from all
-    ErrorDocument 403 /errors/cli/error_404.php
-</FilesMatch>
+    # Menyertakan file dalam subfolder "frontend" kecuali "send"
+    RewriteCond %{REQUEST_URI} !^/assets/pdf
+    RewriteRule ^assets/(.*)$ /assets/$1 [L]
+    # Melarang akses langsung ke file .php, .txt, .jpg dan .db
+    <FilesMatch "\.(mp4|txt|db)$">
+        Order allow,deny
+        Deny from all
+        ErrorDocument 403 404notfound
+    </FilesMatch>
+    RewriteEngine On
+    RewriteCond %{REQUEST_URI} ^/course\.php$
+    RewriteCond %{QUERY_STRING} !token= [NC]
+    RewriteRule .* - [F]
+    <Directory "/home/akademiku/thumbnails">
